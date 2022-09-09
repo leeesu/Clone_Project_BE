@@ -1,0 +1,17 @@
+cloud:
+  aws:
+    s3:
+      bucket: mygreensparta # AWS S3 Bucket Name
+    region:
+      static: ap-northeast-2 # AWS Region
+    stack:
+      auto: false
+    credentials:
+      instanceProfile: true  # AWS CLI 에서 aws configure list 정보를 반영할지의 여부
+
+
+#cloud:
+#  aws:
+#    credentials:
+#      accessKey: {Accesskey 입력} # AWS IAM AccessKey
+#      secretKey: {Secret Key 입력} # AWS IAM SecretKey
