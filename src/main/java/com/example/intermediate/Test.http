@@ -1,0 +1,27 @@
+### 회원가입
+POST http://localhost:8080/api/member/signup
+Content-Type: application/json
+
+{
+  "nickname": "user3",
+  "password": "user3",
+  "passwordConfirm": "user3"
+}
+
+### 로그인
+POST http://localhost:8080/api/member/login
+Content-Type: application/json
+
+{
+  "nickname": "user3",
+  "password": "user3"
+}
+
+### 업로드
+POST http://localhost:8080/api/v1/upload
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMyIsImF1dGgiOiJST0xFX01FTUJFUiIsImV4cCI6MTY2MTg0MDA3M30.gnnAJT3LMg-sEP6yfeU5FmbsWo_j8JYN6Y44qNrm0h8
+Content-Type: multipart/form-data
+
+
+
+
