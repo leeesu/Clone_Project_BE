@@ -2,17 +2,14 @@ package com.example.intermediate.service;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.intermediate.controller.request.PostRequestDto;
-import com.example.intermediate.controller.response.CommentResponseDto;
 import com.example.intermediate.controller.response.PostResponseAllDto;
 import com.example.intermediate.controller.response.PostResponseDto;
 import com.example.intermediate.controller.response.ResponseDto;
-import com.example.intermediate.domain.Comment;
 import com.example.intermediate.domain.Member;
 import com.example.intermediate.domain.Post;
 import com.example.intermediate.external.AwsS3UploadService;
 import com.example.intermediate.external.UploadService;
 import com.example.intermediate.jwt.TokenProvider;
-import com.example.intermediate.repository.CommentRepository;
 import com.example.intermediate.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
