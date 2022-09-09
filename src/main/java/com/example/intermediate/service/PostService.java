@@ -32,7 +32,6 @@ public class PostService {
 
   private final PostRepository postRepository;
   private final TokenProvider tokenProvider;
-  private final static Logger LOG = Logger.getGlobal();
   private final UploadService s3Service;
 
   private final AwsS3UploadService awsS3UploadService;
@@ -96,8 +95,8 @@ public class PostService {
 
   // 게시글 단건 조회
   @Transactional(readOnly = true)
-  public ResponseDto<?> getPost(Long id) {
-    Post post = isPresentPost(id);
+  public ResponseDto<?> getPost(Long postId) {
+    Post post = isPresentPost(postId);
     if (null == post) {
       return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 id 입니다.");
     }
@@ -134,9 +133,9 @@ public class PostService {
                       .build()
       );
     }
+
     return ResponseDto.success(postResponseAllDto);
-    // original code
-//    return ResponseDto.success(postRepository.findAllByOrderByModifiedAtDesc());
+
   }
 
   // 게시글 수정

@@ -32,15 +32,14 @@ public class Post extends Timestamped {
   @Column(nullable = false)
   private int likes;
 
-  //회원정보 검증
+  // 회원정보 검증
   public boolean validateMember(Member member) {
     return !this.member.equals(member);
   }
 
-  public void addLike() {
-    this.likes += 1;
-    System.out.println("this.content = " + this.content);
-    System.out.println("this.likes = " + this.likes);
+  // 좋아요 상태 동기화
+  public void syncLikes(int num) {
+    this.likes = (num);
   }
 
 }
