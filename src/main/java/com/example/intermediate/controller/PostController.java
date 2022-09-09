@@ -54,10 +54,4 @@ public class PostController {
     return postService.deletePost(id, request);
   }
 
-  // 테스트
-  @DeleteMapping( "/api/posts/organize/{id}")
-  public String organizePost(@PathVariable Long id) {
-    postService.organize(id);
-    return "scheduler completed";
-  }
 }

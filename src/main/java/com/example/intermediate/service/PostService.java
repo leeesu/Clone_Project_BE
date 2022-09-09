@@ -31,8 +31,6 @@ import java.util.logging.Logger;
 public class PostService {
 
   private final PostRepository postRepository;
-  private final CommentRepository commentRepository;
-
   private final TokenProvider tokenProvider;
   private final static Logger LOG = Logger.getGlobal();
   private final UploadService s3Service;
@@ -104,23 +102,6 @@ public class PostService {
       return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 id 입니다.");
     }
 
-    List<Comment> commentList = commentRepository.findAllByPost(post);
-    List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-
-
-
-    for (Comment comment : commentList) {
-      commentResponseDtoList.add(
-          CommentResponseDto.builder()
-              .id(comment.getId())
-              .nickname(comment.getMember().getNickname())
-              .content(comment.getContent())
-              .createdAt(comment.getCreatedAt())
-              .modifiedAt(comment.getModifiedAt())
-              .build()
-      );
-    }
-
     return ResponseDto.success(
         PostResponseDto.builder()
             .id(post.getId())
@@ -128,7 +109,6 @@ public class PostService {
             .content(post.getContent())
             .imgUrl(post.getImgUrl())
             .likes(post.getLikes())
-            .commentResponseDtoList(commentResponseDtoList)
             .nickname(post.getMember().getNickname())
             .createdAt(post.getCreatedAt())
             .modifiedAt(post.getModifiedAt())
@@ -142,12 +122,10 @@ public class PostService {
     List<Post> postList = postRepository.findAllByOrderByModifiedAtDesc();
     List<PostResponseAllDto> postResponseAllDto = new ArrayList<>();
     for (Post post : postList) {
-      int numberOfComment = commentRepository.findAllByPost(post).size();
       postResponseAllDto.add(
               PostResponseAllDto.builder()
                       .id(post.getId())
                       .title(post.getTitle())
-                      .comments(numberOfComment)
                       .imgUrl(post.getImgUrl())
                       .likes(post.getLikes())
                       .nickname(post.getMember().getNickname())
@@ -213,22 +191,6 @@ public class PostService {
     post.setContent(requestDto2.getContent());
     post.setImgUrl(s3Service.getFileUrl(fileName));
 
-    /// 댓글 목록 생성
-    List<Comment> commentList = commentRepository.findAllByPost(post);
-    List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-
-    for (Comment comment : commentList) {
-      commentResponseDtoList.add(
-              CommentResponseDto.builder()
-                      .id(comment.getId())
-                      .nickname(comment.getMember().getNickname())
-                      .content(comment.getContent())
-                      .createdAt(comment.getCreatedAt())
-                      .modifiedAt(comment.getModifiedAt())
-                      .build()
-      );
-    }
-
     return ResponseDto.success(
             PostResponseDto.builder()
                     .id(post.getId())
@@ -236,7 +198,6 @@ public class PostService {
                     .content(post.getContent())
                     .imgUrl(post.getImgUrl())
                     .likes(post.getLikes())
-                    .commentResponseDtoList(commentResponseDtoList)
                     .nickname(post.getMember().getNickname())
                     .createdAt(post.getCreatedAt())
                     .modifiedAt(post.getModifiedAt())
@@ -297,15 +258,6 @@ public class PostService {
     return tokenProvider.getMemberFromAuthentication();
   }
 
-  // 스케쥴러에 쓰이는 게시글 정리하는 메소드
-  @Transactional
-  public void organize(Long id) {
-    Post post = postRepository.findById(id).get();
-    if (post.getComments().isEmpty()) {
-      postRepository.deleteById(id);
-      LOG.info("게시물<"+post.getTitle()+">이 삭제되었습니다");
-    }
-  }
 
   private String createFileName(String originalFileName) {
     return UUID.randomUUID().toString().concat(getFileExtension(originalFileName));
