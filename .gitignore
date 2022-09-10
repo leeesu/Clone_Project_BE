@@ -1,3 +1,6 @@
 /src/main/resources/application-credentials.yml
 /src/main/resources/application.properties
 /src/main/resources/application-aws.yml
+
+/out
+/build
