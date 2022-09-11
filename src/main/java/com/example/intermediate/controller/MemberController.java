@@ -21,13 +21,13 @@ public class MemberController {
   private final MemberService memberService;
 
   // 회원가입
-  @PostMapping( "/api/member/signup")
+  @PostMapping( "/signup")
   public ResponseDto<?> signup(@RequestBody @Valid MemberRequestDto requestDto) {
     return memberService.createMember(requestDto);
   }
 
   // 로그인
-  @PostMapping( "/api/member/login")
+  @PostMapping( "/login")
   public ResponseDto<?> login(@RequestBody @Valid LoginRequestDto requestDto,
       HttpServletResponse response
   ) {
@@ -41,7 +41,7 @@ public class MemberController {
 //  }
 
   // 로그아웃
-  @PostMapping( "/api/auth/member/logout")
+  @PostMapping( "/logout")
   public ResponseDto<?> logout(HttpServletRequest request) {
     return memberService.logout(request);
   }

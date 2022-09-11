@@ -55,14 +55,19 @@ public class SecurityConfiguration {
 
         .and()
         .authorizeRequests()
-        .antMatchers("/api/member/**").permitAll()
-        .antMatchers("/api/posts/**").permitAll()
-        .antMatchers("/api/comment/**").permitAll()
-        .anyRequest().authenticated()
+//        .antMatchers("/api/member/**").permitAll()
+            //Member permitAll
+            .antMatchers("/login").permitAll()
+            .antMatchers("/logout").permitAll()
+            .antMatchers("/signup").permitAll()
+            //post permitAll
+            .antMatchers("/api/posts/**").permitAll()
+            .antMatchers("/api/comment/**").permitAll()
+            .anyRequest().authenticated()
 
-        .and()
-        .apply(new JwtSecurityConfiguration(SECRET_KEY, tokenProvider, userDetailsService));
+            .and()
+            .apply(new JwtSecurityConfiguration(SECRET_KEY, tokenProvider, userDetailsService));
 
-    return http.build();
+             return http.build();
   }
 }
