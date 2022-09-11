@@ -31,6 +31,9 @@ public class Post extends Timestamped {
 
   @Column(nullable = false)
   private int likes;
+  //조회수
+  @Column(nullable = false)
+  private int view;
 
   // 회원정보 검증
   public boolean validateMember(Member member) {
@@ -40,6 +43,10 @@ public class Post extends Timestamped {
   // 좋아요 상태 동기화
   public void syncLikes(int num) {
     this.likes = (num);
+  }
+  //조회수 증가
+  public void updateViewCount(){
+    this.view++;
   }
 
 }
