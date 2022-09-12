@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MypageService {
+public class MyshopService {
 
     private final PostRepository postRepository;
     private final TokenProvider tokenProvider;
