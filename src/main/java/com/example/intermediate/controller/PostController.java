@@ -37,6 +37,15 @@ public class PostController {
     return postService.getAllPost();
   }
 
+  // 조회수순 게시글 가져오기
+  @GetMapping("/api/posts/view")
+  public ResponseDto<?> getAllViewPosts() {
+    return postService.getAllPost();
+  }
+
+
+
+
   // 게시글 수정
   @PutMapping( "/api/auth/posts/{id}")
   public ResponseDto<?> updatePost(@PathVariable Long id,
