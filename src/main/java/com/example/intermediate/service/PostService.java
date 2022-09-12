@@ -1,6 +1,7 @@
 package com.example.intermediate.service;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PublicAccessBlockConfiguration;
 import com.example.intermediate.controller.request.PostRequestDto;
 import com.example.intermediate.controller.response.PostResponseAllDto;
 import com.example.intermediate.controller.response.PostResponseDto;
@@ -96,7 +97,7 @@ public class PostService {
   }
 
   // 게시글 단건 조회
-  @Transactional(readOnly = true)
+  @Transactional
   public ResponseDto<?> getPost(Long postId) {
     Post post = isPresentPost(postId);
     if (null == post) {
@@ -244,6 +245,8 @@ public class PostService {
 
     return ResponseDto.success("delete success");
   }
+
+
 
   // URL 에서 파일이름(key) 추출
   public static String getFileNameFromURL(String url) {
