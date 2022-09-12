@@ -96,7 +96,7 @@ public class PostService {
   }
 
   // 게시글 단건 조회
-  @Transactional(readOnly = true)
+  @Transactional// readOnly설정시 데이터가 Mapping되지 않는문제로 해제
   public ResponseDto<?> getPost(Long postId) {
     Post post = isPresentPost(postId);
     if (null == post) {
@@ -124,6 +124,30 @@ public class PostService {
   @Transactional(readOnly = true)
   public ResponseDto<?> getAllPost() {
     List<Post> postList = postRepository.findAllByOrderByModifiedAtDesc();
+    List<PostResponseAllDto> postResponseAllDto = new ArrayList<>();
+    for (Post post : postList) {
+      postResponseAllDto.add(
+              PostResponseAllDto.builder()
+                      .id(post.getId())
+                      .title(post.getTitle())
+                      .imgUrl(post.getImgUrl())
+                      .likes(post.getLikes())
+                      .view(post.getView())
+                      .nickname(post.getMember().getNickname())
+                      .createdAt(post.getCreatedAt())
+                      .modifiedAt(post.getModifiedAt())
+                      .build()
+      );
+    }
+
+    return ResponseDto.success(postResponseAllDto);
+
+  }
+
+  // 조회수순 정렬 게시글 조회
+  @Transactional(readOnly = true)
+  public ResponseDto<?> getAllViewPost() {
+    List<Post> postList = postRepository.findAllByOrderByViewDesc();
     List<PostResponseAllDto> postResponseAllDto = new ArrayList<>();
     for (Post post : postList) {
       postResponseAllDto.add(
