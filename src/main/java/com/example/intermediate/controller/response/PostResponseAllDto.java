@@ -19,6 +19,7 @@ public class PostResponseAllDto {
     private String nickname;
     private int comments;
     private int likes;
+    private int view;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 }

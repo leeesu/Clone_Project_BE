@@ -70,26 +70,28 @@ public class PostService {
      ResponseDto.success(s3Service.getFileUrl(fileName));
 
     Post post = Post.builder()
-        .title(requestDto1.getTitle())
-        .content(requestDto2.getContent())
-        .imgUrl(s3Service.getFileUrl(fileName))
-        .likes(0)
-        .member(member)
-        .build();
+            .title(requestDto1.getTitle())
+            .content(requestDto2.getContent())
+            .imgUrl(s3Service.getFileUrl(fileName))
+            .likes(0)
+            .view(0)
+            .member(member)
+            .build();
 
     postRepository.save(post);
 
     return ResponseDto.success(
         PostResponseDto.builder()
-            .id(post.getId())
-            .title(post.getTitle())
-            .content(post.getContent())
-            .imgUrl(post.getImgUrl())
-            .likes(post.getLikes())
-            .nickname(post.getMember().getNickname())
-            .createdAt(post.getCreatedAt())
-            .modifiedAt(post.getModifiedAt())
-            .build()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .imgUrl(post.getImgUrl())
+                .likes(post.getLikes())
+                .view(post.getView())
+                .nickname(post.getMember().getNickname())
+                .createdAt(post.getCreatedAt())
+                .modifiedAt(post.getModifiedAt())
+                .build()
     );
   }
 
@@ -100,18 +102,21 @@ public class PostService {
     if (null == post) {
       return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 id 입니다.");
     }
+    //단건조회 조회수 증가
+    post.updateViewCount();
 
     return ResponseDto.success(
         PostResponseDto.builder()
-            .id(post.getId())
-            .title(post.getTitle())
-            .content(post.getContent())
-            .imgUrl(post.getImgUrl())
-            .likes(post.getLikes())
-            .nickname(post.getMember().getNickname())
-            .createdAt(post.getCreatedAt())
-            .modifiedAt(post.getModifiedAt())
-            .build()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .imgUrl(post.getImgUrl())
+                .likes(post.getLikes())
+                .view(post.getView())
+                .nickname(post.getMember().getNickname())
+                .createdAt(post.getCreatedAt())
+                .modifiedAt(post.getModifiedAt())
+                .build()
     );
   }
 
@@ -127,6 +132,7 @@ public class PostService {
                       .title(post.getTitle())
                       .imgUrl(post.getImgUrl())
                       .likes(post.getLikes())
+                      .view(post.getView())
                       .nickname(post.getMember().getNickname())
                       .createdAt(post.getCreatedAt())
                       .modifiedAt(post.getModifiedAt())
@@ -197,6 +203,7 @@ public class PostService {
                     .content(post.getContent())
                     .imgUrl(post.getImgUrl())
                     .likes(post.getLikes())
+                    .view(post.getView())
                     .nickname(post.getMember().getNickname())
                     .createdAt(post.getCreatedAt())
                     .modifiedAt(post.getModifiedAt())
