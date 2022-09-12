@@ -25,6 +25,9 @@ public class Post extends Timestamped {
   @Column(nullable = false)
   private String imgUrl;
 
+  @Column(nullable = false)
+  private int price;
+
   @JoinColumn(name = "member_id", nullable = false)
   @ManyToOne(fetch = FetchType.LAZY)
   private Member member;

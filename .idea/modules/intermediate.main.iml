@@ -9,6 +9,7 @@
     <facet type="web" name="Web">
       <configuration>
         <webroots />
+        <sourceRoots />
       </configuration>
     </facet>
     <facet type="jpa" name="JPA">
@@ -16,6 +17,8 @@
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
         <datasource-mapping>
+          <factory-entry name="entityManagerFactory" />
+          <factory-entry name="intermediate.main" />
           <factory-entry name="intermediate.test" />
         </datasource-mapping>
         <naming-strategy-map />
