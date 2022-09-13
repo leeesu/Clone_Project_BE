@@ -283,12 +283,24 @@ public class PostService {
     List<Post> posts = postRepository.findByTitleContaining(keyword);
     List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
-    if(posts.isEmpty()) return ResponseDto.success(postResponseDtoList);
+    if(keyword == null)
+      return ResponseDto.fail("KEYWORD_NOT_FOUND",
+              "검색 결과가 존재하지 않습니다.");
 
-    for(Post post : posts) {
+    if (posts.isEmpty())
+      return ResponseDto.fail("KEYWORD_NOT_FOUND",
+            "검색 결과가 존재하지 않습니다.");
+
+    for (Post post : posts) {
       postResponseDtoList.add(this.convertEntityToDto(post));
     }
-    return ResponseDto.success(postResponseDtoList);
+
+    if (postResponseDtoList == null) {
+      return ResponseDto.fail("KEYWORD_NOT_FOUND",
+              "검색 결과가 존재하지 않습니다.");
+    } else {
+      return ResponseDto.success(postResponseDtoList);
+    }
   }
 private PostResponseDto convertEntityToDto(Post post) {
   return PostResponseDto.builder()

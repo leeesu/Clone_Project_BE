@@ -65,8 +65,8 @@ public class PostController {
   }
 
   //게시글 검색
-  @GetMapping("/products/search")
-  public ResponseDto<?> searchPost(@RequestParam(value="keyword")String keyword){
+  @GetMapping("/products/search/{keyword}")
+  public ResponseDto<?> searchPost(@PathVariable(value="keyword")String keyword){
     return postService.searchPost(keyword);
   }
 
