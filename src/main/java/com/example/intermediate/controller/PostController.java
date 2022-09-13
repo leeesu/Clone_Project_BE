@@ -1,6 +1,7 @@
 package com.example.intermediate.controller;
 
 import com.example.intermediate.controller.request.PostRequestDto;
+import com.example.intermediate.controller.response.PostResponseDto;
 import com.example.intermediate.controller.response.ResponseDto;
 import com.example.intermediate.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -60,6 +62,12 @@ public class PostController {
   public ResponseDto<?> deletePost(@PathVariable Long productId,
       HttpServletRequest request) {
     return postService.deletePost(productId, request);
+  }
+
+  //게시글 검색
+  @GetMapping("/products/search")
+  public ResponseDto<?> searchPost(@RequestParam(value="keyword")String keyword){
+    return postService.searchPost(keyword);
   }
 
 }

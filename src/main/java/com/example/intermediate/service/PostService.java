@@ -277,6 +277,35 @@ public class PostService {
     return ResponseDto.success("delete success");
   }
 
+  //게시글 검색
+  @Transactional
+  public ResponseDto<?> searchPost(String keyword) {
+    List<Post> posts = postRepository.findByTitleContaining(keyword);
+    List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+
+    if(posts.isEmpty()) return ResponseDto.success(postResponseDtoList);
+
+    for(Post post : posts) {
+      postResponseDtoList.add(this.convertEntityToDto(post));
+    }
+    return ResponseDto.success(postResponseDtoList);
+  }
+private PostResponseDto convertEntityToDto(Post post) {
+  return PostResponseDto.builder()
+          .id(post.getId())
+          .title(post.getTitle())
+          .content(post.getContent())
+          .price(post.getPrice())
+          .imgUrl(post.getImgUrl())
+          .likes(post.getLikes())
+          .view(post.getView())
+          .nickname(post.getMember().getNickname())
+          .createdAt(post.getCreatedAt())
+          .modifiedAt(post.getModifiedAt())
+          .build();
+}
+
+
 
 
   // URL 에서 파일이름(key) 추출
