@@ -9,7 +9,7 @@ import com.example.intermediate.domain.Member;
 import com.example.intermediate.jwt.TokenProvider;
 import com.example.intermediate.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,9 +22,7 @@ import java.util.Optional;
 public class MemberService {
 
   private final MemberRepository memberRepository;
-
-  private final PasswordEncoder passwordEncoder;
-//  private final AuthenticationManagerBuilder authenticationManagerBuilder;
+  private final BCryptPasswordEncoder passwordEncoder;
   private final TokenProvider tokenProvider;
 
   @Transactional

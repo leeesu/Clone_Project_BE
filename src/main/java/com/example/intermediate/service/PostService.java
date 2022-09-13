@@ -1,6 +1,7 @@
 package com.example.intermediate.service;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PublicAccessBlockConfiguration;
 import com.example.intermediate.controller.request.PostRequestDto;
 import com.example.intermediate.controller.response.PostResponseAllDto;
 import com.example.intermediate.controller.response.PostResponseDto;
@@ -40,10 +41,9 @@ public class PostService {
 
   // 게시글 작성
   @Transactional
-  public ResponseDto<?> createPost(PostRequestDto requestDto1,
-                                   PostRequestDto requestDto2,
-                                   HttpServletRequest request,
-                                   MultipartFile file) {
+  public ResponseDto<?> createPost(PostRequestDto requestDto,
+                         HttpServletRequest request,
+                         MultipartFile file) {
 
     if (null == request.getHeader("RefreshToken")) {
       return ResponseDto.fail("MEMBER_NOT_FOUND",
@@ -72,8 +72,9 @@ public class PostService {
      ResponseDto.success(s3Service.getFileUrl(fileName));
 
     Post post = Post.builder()
-            .title(requestDto1.getTitle())
-            .content(requestDto2.getContent())
+            .title(requestDto.getTitle())
+            .content(requestDto.getContent())
+            .price(requestDto.getPrice())
             .imgUrl(s3Service.getFileUrl(fileName))
             .likes(0)
             .view(0)
@@ -87,6 +88,7 @@ public class PostService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .price(post.getPrice())
                 .imgUrl(post.getImgUrl())
                 .likes(post.getLikes())
                 .view(post.getView())
@@ -112,6 +114,7 @@ public class PostService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .price(post.getPrice())
                 .imgUrl(post.getImgUrl())
                 .likes(post.getLikes())
                 .view(post.getView())
@@ -133,6 +136,7 @@ public class PostService {
                       .id(post.getId())
                       .title(post.getTitle())
                       .imgUrl(post.getImgUrl())
+                      .price(post.getPrice())
                       .likes(post.getLikes())
                       .view(post.getView())
                       .nickname(post.getMember().getNickname())
@@ -156,6 +160,7 @@ public class PostService {
               PostResponseAllDto.builder()
                       .id(post.getId())
                       .title(post.getTitle())
+                      .price(post.getPrice())
                       .imgUrl(post.getImgUrl())
                       .likes(post.getLikes())
                       .view(post.getView())
@@ -173,8 +178,7 @@ public class PostService {
   // 게시글 수정
   @Transactional
   public ResponseDto<?> updatePost(Long id,
-                                   PostRequestDto requestDto1,
-                                   PostRequestDto requestDto2,
+                                   PostRequestDto requestDto,
                                    MultipartFile file,
                                    HttpServletRequest request
                                    ) {
@@ -218,8 +222,9 @@ public class PostService {
 
     awsS3UploadService.deleteFile(getFileNameFromURL(post.getImgUrl()));  // 기존 파일 삭제
 
-    post.setTitle(requestDto1.getTitle());
-    post.setContent(requestDto2.getContent());
+    post.setTitle(requestDto.getTitle());
+    post.setContent(requestDto.getContent());
+    post.setPrice(requestDto.getPrice());
     post.setImgUrl(s3Service.getFileUrl(fileName));
 
     return ResponseDto.success(
@@ -227,6 +232,7 @@ public class PostService {
                     .id(post.getId())
                     .title(post.getTitle())
                     .content(post.getContent())
+                    .price(post.getPrice())
                     .imgUrl(post.getImgUrl())
                     .likes(post.getLikes())
                     .view(post.getView())
@@ -270,6 +276,8 @@ public class PostService {
 
     return ResponseDto.success("delete success");
   }
+
+
 
   // URL 에서 파일이름(key) 추출
   public static String getFileNameFromURL(String url) {

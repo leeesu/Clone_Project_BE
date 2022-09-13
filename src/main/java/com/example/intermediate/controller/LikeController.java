@@ -15,9 +15,9 @@ public class LikeController {
     private final LikeService likeService;
 
     // 게시글 좋아요
-    @PostMapping( "/products/likes/{postId}")
-    public ResponseDto<?> addPostLike(@PathVariable Long postId, HttpServletRequest request) {
-        return likeService.addPostLike(postId, request);
+    @PostMapping( "/products/likes/{productId}")
+    public ResponseDto<?> addPostLike(@PathVariable Long productId, HttpServletRequest request) {
+        return likeService.addPostLike(productId, request);
     }
 
 }

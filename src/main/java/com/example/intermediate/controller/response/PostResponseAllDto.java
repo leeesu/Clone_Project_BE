@@ -17,6 +17,7 @@ public class PostResponseAllDto {
     private String title;
     private String imgUrl;
     private String nickname;
+    private int price;
     private int comments;
     private int likes;
     private int view;

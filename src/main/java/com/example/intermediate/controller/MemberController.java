@@ -4,8 +4,9 @@ import com.example.intermediate.controller.request.LoginRequestDto;
 import com.example.intermediate.controller.request.MemberRequestDto;
 import com.example.intermediate.controller.response.ResponseDto;
 import com.example.intermediate.service.MemberService;
-import com.example.intermediate.service.MypageService;
+import com.example.intermediate.service.MyshopService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,11 +47,11 @@ public class MemberController {
     return memberService.logout(request);
   }
 
-  private final MypageService mypageService;
+  private final MyshopService myshopService;
 
-  // 마이페이지
-  @PostMapping( "/api/auth/member/info")
+  // 내 상점
+  @GetMapping( "/shop/member/products")
   public ResponseDto<?> getAllActs(HttpServletRequest request) {
-    return mypageService.getAllActs(request);
+    return myshopService.getAllActs(request);
   }
 }

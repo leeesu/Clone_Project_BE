@@ -60,10 +60,10 @@ public class LikeService {
 
         post.syncLikes(likeRepository.findAllByPostId(post.getId()).size());
 
-        if (post.getLikes() == 0) {
-            return ResponseDto.success("좋아요가 삭제되었습니다.");
-        } else {
+        if (likes == null) {
             return ResponseDto.success("좋아요가 정상적으로 반영되었습니다.");
+        } else {
+            return ResponseDto.success("좋아요가 삭제되었습니다.");
         }
 
     }

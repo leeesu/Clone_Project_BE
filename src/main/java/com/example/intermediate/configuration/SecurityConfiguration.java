@@ -16,14 +16,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@ConditionalOnDefaultWebSecurity
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class SecurityConfiguration {
 
   @Value("${jwt.secret}")
@@ -34,7 +31,7 @@ public class SecurityConfiguration {
   private final AccessDeniedHandlerException accessDeniedHandlerException;
 
   @Bean
-  public PasswordEncoder passwordEncoder() {
+  public BCryptPasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
@@ -61,8 +58,7 @@ public class SecurityConfiguration {
             .antMatchers("/logout").permitAll()
             .antMatchers("/signup").permitAll()
             //post permitAll
-            .antMatchers("/api/posts/**").permitAll()
-            .antMatchers("/api/comment/**").permitAll()
+            .antMatchers("/products/**").permitAll()
             .anyRequest().authenticated()
 
             .and()
