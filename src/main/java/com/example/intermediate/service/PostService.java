@@ -281,7 +281,7 @@ public class PostService {
   @Transactional
   public ResponseDto<?> searchPost(String keyword) {
     List<Post> posts = postRepository.findByTitleContaining(keyword);
-    List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+    List<PostResponseAllDto> postResponseAllDtoList = new ArrayList<>();
 
     if(keyword == null)
       return ResponseDto.fail("KEYWORD_NOT_FOUND",
@@ -292,21 +292,20 @@ public class PostService {
             "검색 결과가 존재하지 않습니다.");
 
     for (Post post : posts) {
-      postResponseDtoList.add(this.convertEntityToDto(post));
+      postResponseAllDtoList.add(this.convertEntityToDto(post));
     }
 
-    if (postResponseDtoList == null) {
+    if (postResponseAllDtoList == null) {
       return ResponseDto.fail("KEYWORD_NOT_FOUND",
               "검색 결과가 존재하지 않습니다.");
     } else {
-      return ResponseDto.success(postResponseDtoList);
+      return ResponseDto.success(postResponseAllDtoList);
     }
   }
-private PostResponseDto convertEntityToDto(Post post) {
-  return PostResponseDto.builder()
+private PostResponseAllDto convertEntityToDto(Post post) {
+  return PostResponseAllDto.builder()
           .id(post.getId())
           .title(post.getTitle())
-          .content(post.getContent())
           .price(post.getPrice())
           .imgUrl(post.getImgUrl())
           .likes(post.getLikes())

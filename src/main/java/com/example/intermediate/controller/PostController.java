@@ -44,7 +44,7 @@ public class PostController {
   // 조회수순 게시글 가져오기
   @GetMapping("/products/view")
   public ResponseDto<?> getAllViewPosts() {
-    return postService.getAllPost();
+    return postService.getAllViewPost();
   }
 
 
