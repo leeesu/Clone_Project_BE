@@ -2,6 +2,8 @@ package com.example.intermediate.controller.response;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.example.intermediate.domain.Img;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +17,7 @@ public class PostResponseDto {
   private Long id;
   private String title;
   private String content;
-  private String imgUrl;
+  private List<String> imgList;
   private int price;
   private Integer likes;
   private String nickname;

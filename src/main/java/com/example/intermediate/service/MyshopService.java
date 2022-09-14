@@ -1,9 +1,11 @@
 package com.example.intermediate.service;
 
 import com.example.intermediate.controller.response.*;
+import com.example.intermediate.domain.Img;
 import com.example.intermediate.domain.Member;
 import com.example.intermediate.domain.Post;
 import com.example.intermediate.jwt.TokenProvider;
+import com.example.intermediate.repository.ImgRepository;
 import com.example.intermediate.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.util.List;
 public class MyshopService {
 
     private final PostRepository postRepository;
+    private final ImgRepository imgRepository;
     private final TokenProvider tokenProvider;
 
 
@@ -39,14 +42,20 @@ public class MyshopService {
 
         // Post 데이터 수집
         List<Post> postList = postRepository.findAllByMember(member);
-        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+        List<PostResponseAllDto> postResponseAllDto = new ArrayList<>();
+
         for (Post post : postList) {
-            postResponseDtoList.add(
-                    PostResponseDto.builder()
+            List<Img> findImgList = imgRepository.findByPost_Id(post.getId());
+            List<String> imgList = new ArrayList<>();
+            for (Img img : findImgList) {
+                imgList.add(img.getImgUrl());
+            }
+
+            postResponseAllDto.add(
+                    PostResponseAllDto.builder()
                             .id(post.getId())
                             .title(post.getTitle())
-                            .content(post.getContent())
-                            .imgUrl(post.getImgUrl())
+                            .imgUrl(imgList.get(0))
                             .likes(post.getLikes())
                             .nickname(member.getNickname())
                             .createdAt(post.getCreatedAt())
@@ -57,9 +66,10 @@ public class MyshopService {
 
         return ResponseDto.success(
                 MyPageResponseDto.builder()
-                        .postResponseDtoList(postResponseDtoList)
+                        .postResponseAllDtoList(postResponseAllDto)
                         .build()
         );
+
     }
 
     // 로그인 유효성 검사

@@ -36,11 +36,6 @@ public class MemberController {
     return memberService.login(requestDto, response);
   }
 
-//  @RequestMapping(value = "/api/auth/member/reissue", method = RequestMethod.POST)
-//  public ResponseDto<?> reissue(HttpServletRequest request, HttpServletResponse response) {
-//    return memberService.reissue(request, response);
-//  }
-
   // 로그아웃
   @PostMapping( "/logout")
   public ResponseDto<?> logout(HttpServletRequest request) {
