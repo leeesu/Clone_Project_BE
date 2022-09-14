@@ -1,32 +1,23 @@
 package com.example.intermediate.service;
 
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PublicAccessBlockConfiguration;
 import com.example.intermediate.controller.request.PostRequestDto;
 import com.example.intermediate.controller.response.PostResponseAllDto;
 import com.example.intermediate.controller.response.PostResponseDto;
 import com.example.intermediate.controller.response.ResponseDto;
+import com.example.intermediate.domain.Img;
 import com.example.intermediate.domain.Member;
 import com.example.intermediate.domain.Post;
 import com.example.intermediate.external.AwsS3UploadService;
-import com.example.intermediate.external.UploadService;
 import com.example.intermediate.jwt.TokenProvider;
+import com.example.intermediate.repository.ImgRepository;
 import com.example.intermediate.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.logging.Logger;
 
 
 @Service
@@ -34,16 +25,15 @@ import java.util.logging.Logger;
 public class PostService {
 
   private final PostRepository postRepository;
+  private final ImgRepository imgRepository;
   private final TokenProvider tokenProvider;
-  private final UploadService s3Service;
-
   private final AwsS3UploadService awsS3UploadService;
 
   // 게시글 작성
   @Transactional
   public ResponseDto<?> createPost(PostRequestDto requestDto,
-                         HttpServletRequest request,
-                         MultipartFile file) {
+                                   List<String> imgPaths,
+                                   HttpServletRequest request) {
 
     if (null == request.getHeader("RefreshToken")) {
       return ResponseDto.fail("MEMBER_NOT_FOUND",
@@ -60,22 +50,10 @@ public class PostService {
       return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
     }
 
-    String fileName = createFileName(file.getOriginalFilename());  // 파일 이름을 유니크한 이름으로 재지정. 같은 이름의 파일을 업로드 하면 overwrite 됨
-    ObjectMetadata objectMetadata = new ObjectMetadata();
-    objectMetadata.setContentType(file.getContentType());
-    objectMetadata.setContentLength(file.getSize());
-    try (InputStream inputStream = file.getInputStream()) {
-      s3Service.uploadFile(inputStream, objectMetadata, fileName);
-    } catch (IOException e) {
-      throw new IllegalArgumentException(String.format("파일 변환 중 에러가 발생하였습니다 (%s)", file.getOriginalFilename()));
-    }
-     ResponseDto.success(s3Service.getFileUrl(fileName));
-
     Post post = Post.builder()
             .title(requestDto.getTitle())
             .content(requestDto.getContent())
             .price(requestDto.getPrice())
-            .imgUrl(s3Service.getFileUrl(fileName))
             .likes(0)
             .view(0)
             .member(member)
@@ -83,13 +61,22 @@ public class PostService {
 
     postRepository.save(post);
 
+    postBlankCheck(imgPaths);
+
+    List<String> imgList = new ArrayList<>();
+    for (String imgUrl : imgPaths) {
+      Img img = new Img(imgUrl, post);
+      imgRepository.save(img);
+      imgList.add(img.getImgUrl());
+    }
+
     return ResponseDto.success(
         PostResponseDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .imgList(imgList)
                 .price(post.getPrice())
-                .imgUrl(post.getImgUrl())
                 .likes(post.getLikes())
                 .view(post.getView())
                 .nickname(post.getMember().getNickname())
@@ -97,6 +84,12 @@ public class PostService {
                 .modifiedAt(post.getModifiedAt())
                 .build()
     );
+  }
+
+  private void postBlankCheck(List<String> imgPaths) {
+    if(imgPaths == null || imgPaths.isEmpty()){ //.isEmpty()도 되는지 확인해보기
+      throw new NullPointerException("이미지를 등록해주세요(Blank Check)");
+    }
   }
 
   // 게시글 단건 조회
@@ -109,13 +102,19 @@ public class PostService {
     //단건조회 조회수 증가
     post.updateViewCount();
 
+    List<Img> findImgList = imgRepository.findByPost_Id(post.getId());
+    List<String> imgList = new ArrayList<>();
+    for (Img img : findImgList) {
+      imgList.add(img.getImgUrl());
+    }
+
     return ResponseDto.success(
         PostResponseDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .imgList(imgList)
                 .price(post.getPrice())
-                .imgUrl(post.getImgUrl())
                 .likes(post.getLikes())
                 .view(post.getView())
                 .nickname(post.getMember().getNickname())
@@ -130,12 +129,19 @@ public class PostService {
   public ResponseDto<?> getAllPost() {
     List<Post> postList = postRepository.findAllByOrderByModifiedAtDesc();
     List<PostResponseAllDto> postResponseAllDto = new ArrayList<>();
+
     for (Post post : postList) {
+      List<Img> findImgList = imgRepository.findByPost_Id(post.getId());
+      List<String> imgList = new ArrayList<>();
+      for (Img img : findImgList) {
+        imgList.add(img.getImgUrl());
+      }
+
       postResponseAllDto.add(
               PostResponseAllDto.builder()
                       .id(post.getId())
                       .title(post.getTitle())
-                      .imgUrl(post.getImgUrl())
+                      .imgUrl(imgList.get(0))
                       .price(post.getPrice())
                       .likes(post.getLikes())
                       .view(post.getView())
@@ -155,13 +161,20 @@ public class PostService {
   public ResponseDto<?> getAllViewPost() {
     List<Post> postList = postRepository.findAllByOrderByViewDesc();
     List<PostResponseAllDto> postResponseAllDto = new ArrayList<>();
+
     for (Post post : postList) {
+      List<Img> findImgList = imgRepository.findByPost_Id(post.getId());
+      List<String> imgList = new ArrayList<>();
+      for (Img img : findImgList) {
+        imgList.add(img.getImgUrl());
+      }
+
       postResponseAllDto.add(
               PostResponseAllDto.builder()
                       .id(post.getId())
                       .title(post.getTitle())
                       .price(post.getPrice())
-                      .imgUrl(post.getImgUrl())
+                      .imgUrl(imgList.get(0))
                       .likes(post.getLikes())
                       .view(post.getView())
                       .nickname(post.getMember().getNickname())
@@ -172,14 +185,13 @@ public class PostService {
     }
 
     return ResponseDto.success(postResponseAllDto);
-
   }
 
   // 게시글 수정
   @Transactional
   public ResponseDto<?> updatePost(Long id,
                                    PostRequestDto requestDto,
-                                   MultipartFile file,
+                                   List<String> imgPaths,
                                    HttpServletRequest request
                                    ) {
 
@@ -203,37 +215,41 @@ public class PostService {
     if (null == post) {
       return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 id 입니다.");
     }
-
     if (post.validateMember(member)) {
       return ResponseDto.fail("BAD_REQUEST", "작성자만 수정할 수 있습니다.");
     }
 
-    /// 게시글 수정
-    String fileName = createFileName(file.getOriginalFilename());  // 파일 이름을 유니크한 이름으로 재지정. 같은 이름의 파일을 업로드 하면 overwrite 됨
-    ObjectMetadata objectMetadata = new ObjectMetadata();
-    objectMetadata.setContentType(file.getContentType());
-    objectMetadata.setContentLength(file.getSize());
-    try (InputStream inputStream = file.getInputStream()) {
-      s3Service.uploadFile(inputStream, objectMetadata, fileName);
-    } catch (IOException e) {
-      throw new IllegalArgumentException(String.format("파일 변환 중 에러가 발생하였습니다 (%s)", file.getOriginalFilename()));
+    /// 기존 이미지 삭제
+    List<Img> findImgList = imgRepository.findByPost_Id(post.getId());
+    List<String> imgList = new ArrayList<>();
+    for (Img img : findImgList) {
+      imgList.add(img.getImgUrl());
     }
-    ResponseDto.success(s3Service.getFileUrl(fileName));
+    for (String imgUrl : imgList) {
+      awsS3UploadService.deleteFile(AwsS3UploadService.getFileNameFromURL(imgUrl));
+    }
+    imgRepository.deleteByPost_Id(post.getId());
 
-    awsS3UploadService.deleteFile(getFileNameFromURL(post.getImgUrl()));  // 기존 파일 삭제
+    postBlankCheck(imgPaths);
+
+    List<String> newImgList = new ArrayList<>();
+    for (String imgUrl : imgPaths) {
+      Img img = new Img(imgUrl, post);
+      imgRepository.save(img);
+      newImgList.add(img.getImgUrl());
+    }
 
     post.setTitle(requestDto.getTitle());
     post.setContent(requestDto.getContent());
     post.setPrice(requestDto.getPrice());
-    post.setImgUrl(s3Service.getFileUrl(fileName));
 
     return ResponseDto.success(
             PostResponseDto.builder()
                     .id(post.getId())
                     .title(post.getTitle())
                     .content(post.getContent())
+                    .imgList(newImgList)
                     .price(post.getPrice())
-                    .imgUrl(post.getImgUrl())
                     .likes(post.getLikes())
                     .view(post.getView())
                     .nickname(post.getMember().getNickname())
@@ -272,7 +288,15 @@ public class PostService {
 
     postRepository.delete(post);
 
-    awsS3UploadService.deleteFile(getFileNameFromURL(post.getImgUrl()));
+    List<Img> findImgList = imgRepository.findByPost_Id(post.getId());
+    List<String> imgList = new ArrayList<>();
+    for (Img img : findImgList) {
+      imgList.add(img.getImgUrl());
+    }
+
+    for (String imgUrl : imgList) {
+      awsS3UploadService.deleteFile(AwsS3UploadService.getFileNameFromURL(imgUrl));
+    }
 
     return ResponseDto.success("delete success");
   }
@@ -307,7 +331,7 @@ private PostResponseAllDto convertEntityToDto(Post post) {
           .id(post.getId())
           .title(post.getTitle())
           .price(post.getPrice())
-          .imgUrl(post.getImgUrl())
+          .imgUrl(imgRepository.findByPost_Id(post.getId()).get(0).getImgUrl())
           .likes(post.getLikes())
           .view(post.getView())
           .nickname(post.getMember().getNickname())
@@ -315,8 +339,6 @@ private PostResponseAllDto convertEntityToDto(Post post) {
           .modifiedAt(post.getModifiedAt())
           .build();
 }
-
-
 
 
   // URL 에서 파일이름(key) 추출
@@ -337,18 +359,4 @@ private PostResponseAllDto convertEntityToDto(Post post) {
     }
     return tokenProvider.getMemberFromAuthentication();
   }
-
-
-  private String createFileName(String originalFileName) {
-    return UUID.randomUUID().toString().concat(getFileExtension(originalFileName));
-  }
-
-  private String getFileExtension(String fileName) {
-    try {
-      return fileName.substring(fileName.lastIndexOf("."));
-    } catch (StringIndexOutOfBoundsException e) {
-      throw new IllegalArgumentException(String.format("잘못된 형식의 파일 (%s) 입니다", fileName));
-    }
-  }
-
 }

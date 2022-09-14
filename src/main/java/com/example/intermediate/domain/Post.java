@@ -3,6 +3,7 @@ package com.example.intermediate.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -22,8 +23,8 @@ public class Post extends Timestamped {
   @Column(nullable = false)
   private String content;
 
-  @Column(nullable = false)
-  private String imgUrl;
+  @Transient
+  private final List<Img> imgList = new ArrayList<>();
 
   @Column(nullable = false)
   private int price;
