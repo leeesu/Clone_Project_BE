@@ -40,11 +40,11 @@
 
 
 ## 4. API 명세서
+<img width="696" alt="Screen Shot 2022-09-15 at 1 15 10 PM" src="https://user-images.githubusercontent.com/101810007/190313988-66c0f286-5331-4ef0-8a2c-1a755604f1b7.png">
+<img width="696" alt="Screen Shot 2022-09-15 at 1 15 28 PM" src="https://user-images.githubusercontent.com/101810007/190314095-7615c4cc-9d62-43ee-a1be-fe4a73009674.png">
+<img width="696" alt="Screen Shot 2022-09-15 at 1 16 02 PM" src="https://user-images.githubusercontent.com/101810007/190314107-2a3c7ae4-2fef-4788-b8ef-adecd2361361.png">
+<img width="696" alt="Screen Shot 2022-09-15 at 1 16 21 PM" src="https://user-images.githubusercontent.com/101810007/190314133-6a59a2b3-e957-427a-9382-aba5d9b3f3d0.png">
+<img width="696" alt="Screen Shot 2022-09-15 at 1 18 51 PM" src="https://user-images.githubusercontent.com/101810007/190314148-8111a8bc-77a1-4a13-8e1d-fb2151c2e2de.png">
+<img width="697" alt="Screen Shot 2022-09-15 at 1 19 07 PM" src="https://user-images.githubusercontent.com/101810007/190314161-4ea984c1-8562-4afc-934a-eb9b52ec1bfb.png">
 
-
-
----
-
-
-## 5. ERD
 
