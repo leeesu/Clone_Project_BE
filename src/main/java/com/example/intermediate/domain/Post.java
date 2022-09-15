@@ -24,6 +24,7 @@ public class Post extends Timestamped {
   private String content;
 
   @Transient
+  @OneToMany(fetch = FetchType.LAZY)
   private final List<Img> imgList = new ArrayList<>();
 
   @Column(nullable = false)
